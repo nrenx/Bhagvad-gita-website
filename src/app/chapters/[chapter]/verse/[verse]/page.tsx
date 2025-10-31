@@ -11,7 +11,10 @@ import { VideoPlayer } from '@/components/verse/VideoPlayer'
 import { QuickActions } from '@/components/verse/QuickActions'
 import { getAllVerseKeys, getChapterInfo, getAdjacentVerses } from '@/lib/data'
 import { getVerseDataFromFiles } from '@/lib/verse-data'
-import { generateVerseVideoUrl } from '@/lib/content-utils'
+import {
+  getVerseVideoSources,
+  resolveDefaultVideoLanguage,
+} from '@/lib/verse-videos'
 
 interface VersePageProps {
   params: {
@@ -110,7 +113,9 @@ export default async function VersePage({ params }: VersePageProps) {
   }
 
   const { previousVerse, nextVerse } = getAdjacentVerses(chapterNum, verseNum)
-  const videoUrl = generateVerseVideoUrl(chapterNum, verseNum)
+  const verseVideos = getVerseVideoSources(chapterNum, verseNum)
+  const defaultVideoLanguage = resolveDefaultVideoLanguage(verseVideos)
+  const hasVideos = Object.keys(verseVideos).length > 0
 
   // Extract key themes/concepts from the verse
   const extractKeyThemes = (text: string): string[] => {
@@ -213,13 +218,17 @@ export default async function VersePage({ params }: VersePageProps) {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   Video Commentary
-                  <Badge variant="secondary" className="ml-2">Multi-language</Badge>
+                  <Badge variant="secondary" className="ml-2">
+                    {hasVideos ? 'Available' : 'Coming Soon'}
+                  </Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <VideoPlayer 
                   chapter={chapterNum}
                   verse={verseNum}
+                  videos={verseVideos}
+                  defaultLanguage={defaultVideoLanguage}
                 />
               </CardContent>
             </Card>
