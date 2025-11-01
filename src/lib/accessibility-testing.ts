@@ -130,7 +130,6 @@ export function validateFormAccessibility(form: HTMLFormElement): {
       issues.push(`Input missing label: ${input.getAttribute('name') || 'unnamed'}`);
     }
 
-    const type = input.getAttribute('type');
     if (input.hasAttribute('required') && !input.getAttribute('aria-required')) {
       issues.push(`Required field missing aria-required: ${input.getAttribute('name')}`);
     }

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { PageTransition } from "@/components/ui/animations";
 import { SkipLink } from "@/components/ui/skip-link";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
@@ -91,6 +90,16 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <head>
         {/* Preload critical fonts */}
+        <link
+          rel="preconnect"
+          href="https://fonts.googleapis.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
         <link
           rel="preload"
           href="https://fonts.gstatic.com/s/notosansdevanagari/v25/TuGKUUVrRomTS2TjqwC-JC7DWkDhVxOxYqx6QdZPnQ.woff2"

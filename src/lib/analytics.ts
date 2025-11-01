@@ -3,6 +3,34 @@
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
+type EventProperties = Record<string, unknown>;
+
+type WebVitalMetric = {
+  name: string;
+  value: number;
+  id: string;
+  delta: number;
+  entries: PerformanceEntry[];
+  attribution?: unknown;
+};
+
+type WebVitalReporter = (metric: WebVitalMetric) => void;
+
+type WebVitalModule = {
+  onCLS: (report: WebVitalReporter) => void;
+  onFID: (report: WebVitalReporter) => void;
+  onFCP: (report: WebVitalReporter) => void;
+  onLCP: (report: WebVitalReporter) => void;
+  onTTFB: (report: WebVitalReporter) => void;
+};
+
+declare global {
+  interface Window {
+    gtag?: (command: 'config' | 'event', targetId: string, params?: EventProperties) => void;
+    plausible?: (eventName: string, options?: { props?: EventProperties }) => void;
+  }
+}
+
 /**
  * Web Vitals monitoring for Core Web Vitals
  * Tracks LCP, FID, CLS, FCP, TTFB
@@ -13,16 +41,23 @@ export function useWebVitals() {
 
     // Import web-vitals dynamically (optional dependency)
     // To use: npm install web-vitals
-    import('web-vitals').then(({ onCLS, onFID, onFCP, onLCP, onTTFB }) => {
-      onCLS((metric: any) => trackEvent('web_vital', { name: 'CLS', value: metric.value }));
-      onFID((metric: any) => trackEvent('web_vital', { name: 'FID', value: metric.value }));
-      onFCP((metric: any) => trackEvent('web_vital', { name: 'FCP', value: metric.value }));
-      onLCP((metric: any) => trackEvent('web_vital', { name: 'LCP', value: metric.value }));
-      onTTFB((metric: any) => trackEvent('web_vital', { name: 'TTFB', value: metric.value }));
-    }).catch(() => {
+    import('web-vitals')
+      .then(module => {
+  const { onCLS, onFID, onFCP, onLCP, onTTFB } = module as unknown as WebVitalModule;
+        const report = (name: WebVitalMetric['name']) => (metric: WebVitalMetric) => {
+          trackEvent('web_vital', { name, value: metric.value });
+        };
+
+        onCLS(report('CLS'));
+        onFID(report('FID'));
+        onFCP(report('FCP'));
+        onLCP(report('LCP'));
+        onTTFB(report('TTFB'));
+      })
+      .catch(() => {
       // web-vitals not installed, skip tracking
       console.log('Web Vitals tracking disabled (package not installed)');
-    });
+      });
   }, []);
 }
 
@@ -43,15 +78,18 @@ export function usePageTracking() {
 
 function trackPageView(url: string) {
   // Google Analytics 4
-  if (typeof window !== 'undefined' && 'gtag' in window) {
-    (window as any).gtag('config', process.env.NEXT_PUBLIC_GA_ID, {
-      page_path: url,
-    });
+  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+    const trackingId = process.env.NEXT_PUBLIC_GA_ID;
+    if (trackingId) {
+      window.gtag('config', trackingId, {
+        page_path: url,
+      });
+    }
   }
 
   // Plausible Analytics (privacy-friendly alternative)
-  if (typeof window !== 'undefined' && 'plausible' in window) {
-    (window as any).plausible('pageview');
+  if (typeof window !== 'undefined') {
+    window.plausible?.('pageview');
   }
 
   // Custom tracking
@@ -63,19 +101,15 @@ function trackPageView(url: string) {
  */
 export function trackEvent(
   eventName: string,
-  properties?: Record<string, any>
+  properties?: EventProperties
 ) {
   if (typeof window === 'undefined') return;
 
   // Google Analytics 4
-  if ('gtag' in window) {
-    (window as any).gtag('event', eventName, properties);
-  }
+  window.gtag?.('event', eventName, properties);
 
   // Plausible Analytics
-  if ('plausible' in window) {
-    (window as any).plausible(eventName, { props: properties });
-  }
+  window.plausible?.(eventName, { props: properties });
 
   console.log('Event tracked:', eventName, properties);
 }
