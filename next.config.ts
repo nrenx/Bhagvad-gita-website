@@ -54,8 +54,8 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   
-  // Enable static exports for better performance (temporarily disabled for development)
-  // output: process.env.NODE_ENV === 'production' ? 'export' : undefined,
+  // Enable static exports when building for production (required for GitHub Pages)
+  output: process.env.NODE_ENV === 'production' ? 'export' : undefined,
   trailingSlash: true,
 };
 

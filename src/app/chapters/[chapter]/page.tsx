@@ -5,7 +5,14 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getChapterInfo, getChapterVerses } from '@/lib/data';
+import { getAllChapters, getChapterInfo, getChapterVerses } from '@/lib/data';
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  return getAllChapters().map((chapter) => ({
+    chapter: chapter.number.toString(),
+  }));
+}
 import { 
   BookOpen, 
   ArrowRight, 

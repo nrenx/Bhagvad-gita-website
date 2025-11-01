@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { PageTransition } from "@/components/ui/animations";
 import { SkipLink } from "@/components/ui/skip-link";
-import { NavigationProvider } from "@/contexts/NavigationContext";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
@@ -94,17 +93,15 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         <SkipLink href="#main-content">Skip to main content</SkipLink>
-        <NavigationProvider>
-          <div className="relative">
-            <Header />
-            <PageTransition>
-              <main id="main-content" role="main">
-                {children}
-              </main>
-            </PageTransition>
-            <Footer />
-          </div>
-        </NavigationProvider>
+        <div className="relative">
+          <Header />
+          <PageTransition>
+            <main id="main-content" role="main">
+              {children}
+            </main>
+          </PageTransition>
+          <Footer />
+        </div>
       </body>
     </html>
   );
