@@ -16,17 +16,19 @@ import {
   resolveDefaultVideoLanguage,
 } from '@/lib/verse-videos'
 
+type VerseParams = {
+  chapter: string
+  verse: string
+}
+
 interface VersePageProps {
-  params: {
-    chapter: string
-    verse: string
-  }
+  params: Promise<VerseParams>
 }
 
 export async function generateMetadata({ params }: VersePageProps): Promise<Metadata> {
-  const resolvedParams = await params;
-  const chapterNum = parseInt(resolvedParams.chapter)
-  const verseNum = parseInt(resolvedParams.verse)
+  const { chapter, verse } = await params
+  const chapterNum = Number.parseInt(chapter, 10)
+  const verseNum = Number.parseInt(verse, 10)
   
   if (isNaN(chapterNum) || isNaN(verseNum)) {
     return {
@@ -97,12 +99,13 @@ export async function generateStaticParams() {
 }
 
 export default async function VersePage({ params }: VersePageProps) {
-  const resolvedParams = await params;
-  const chapterNum = parseInt(resolvedParams.chapter)
-  const verseNum = parseInt(resolvedParams.verse)
+  const { chapter, verse } = await params
+  const chapterNum = Number.parseInt(chapter, 10)
+  const verseNum = Number.parseInt(verse, 10)
   
   if (isNaN(chapterNum) || isNaN(verseNum)) {
     notFound()
+    return null
   }
 
   const chapterInfo = getChapterInfo(chapterNum)
@@ -110,6 +113,7 @@ export default async function VersePage({ params }: VersePageProps) {
   
   if (!chapterInfo || !verseData) {
     notFound()
+    return null
   }
 
   const { previousVerse, nextVerse } = getAdjacentVerses(chapterNum, verseNum)

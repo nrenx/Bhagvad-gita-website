@@ -1,7 +1,9 @@
 'use client';
 
-import { motion, useInView, useScroll, useTransform, Variants } from 'framer-motion';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
+import type { HTMLMotionProps, Variants } from 'framer-motion';
 import { useRef } from 'react';
+import type { MouseEvent as ReactMouseEvent } from 'react';
 import { cn } from '@/lib/utils';
 
 // Animation variants
@@ -233,17 +235,13 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
 }
 
 // Enhanced button with micro-interactions
+type InteractiveButtonProps = HTMLMotionProps<'button'>;
+
 export function InteractiveButton({ 
   children, 
   className = "",
-  variant = "default",
   ...props 
-}: { 
-  children: React.ReactNode; 
-  className?: string;
-  variant?: "default" | "primary" | "secondary";
-  [key: string]: any;
-}) {
+}: InteractiveButtonProps) {
   return (
     <motion.button
       className={className}
@@ -275,15 +273,13 @@ export function InteractiveButton({
 }
 
 // Card hover effects
+type InteractiveCardProps = HTMLMotionProps<'div'>;
+
 export function InteractiveCard({ 
   children, 
   className = "",
   ...props 
-}: { 
-  children: React.ReactNode; 
-  className?: string;
-  [key: string]: any;
-}) {
+}: InteractiveCardProps) {
   return (
     <motion.div
       className={className}
@@ -315,21 +311,23 @@ export function InteractiveCard({
 }
 
 // Magnetic effect for buttons
+interface MagneticElementProps {
+  children: React.ReactNode;
+  strength?: number;
+}
+
 export function MagneticElement({ 
   children, 
   strength = 0.2 
-}: { 
-  children: React.ReactNode; 
-  strength?: number;
-}) {
+}: MagneticElementProps) {
   const ref = useRef<HTMLDivElement>(null);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleMouseMove = (event: ReactMouseEvent<HTMLDivElement>) => {
     const rect = ref.current?.getBoundingClientRect();
     if (!rect) return;
 
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
+    const x = event.clientX - rect.left - rect.width / 2;
+    const y = event.clientY - rect.top - rect.height / 2;
 
     ref.current!.style.transform = `translate(${x * strength}px, ${y * strength}px)`;
   };

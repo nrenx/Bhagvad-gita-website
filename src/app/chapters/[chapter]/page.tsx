@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getChapterInfo, getChapterVerses, verseExists } from '@/lib/data';
+import { getChapterInfo, getChapterVerses } from '@/lib/data';
 import { 
   BookOpen, 
   ArrowRight, 
@@ -17,15 +17,17 @@ import {
   Home
 } from 'lucide-react';
 
+type ChapterParams = {
+  chapter: string;
+};
+
 interface ChapterPageProps {
-  params: {
-    chapter: string;
-  };
+  params: Promise<ChapterParams>;
 }
 
 export async function generateMetadata({ params }: ChapterPageProps): Promise<Metadata> {
-  const awaitedParams = await params;
-  const chapterNumber = parseInt(awaitedParams.chapter);
+  const { chapter } = await params;
+  const chapterNumber = Number.parseInt(chapter, 10);
   const chapterInfo = getChapterInfo(chapterNumber);
 
   if (!chapterInfo) {
@@ -55,15 +57,16 @@ export async function generateMetadata({ params }: ChapterPageProps): Promise<Me
 }
 
 export default async function ChapterPage({ params }: ChapterPageProps) {
-  const awaitedParams = await params;
-  const chapterNumber = parseInt(awaitedParams.chapter);
+  const { chapter } = await params;
+  const chapterNumber = Number.parseInt(chapter, 10);
   const chapterInfo = getChapterInfo(chapterNumber);
 
   if (!chapterInfo) {
     notFound();
+    return null;
   }
 
-  const verses = await getChapterVerses(chapterNumber);
+  const verseNumbers = await getChapterVerses(chapterNumber);
   const hasNextChapter = chapterNumber < 18;
   const hasPrevChapter = chapterNumber > 1;
 
@@ -210,7 +213,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {Array.from({ length: chapterInfo.verseCount }, (_, i) => i + 1).map((verseNumber) => (
+                {verseNumbers.map((verseNumber) => (
                   <Card
                     key={verseNumber}
                     className="group hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 bg-white shadow-md cursor-pointer"

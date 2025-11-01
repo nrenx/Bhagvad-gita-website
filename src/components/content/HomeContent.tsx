@@ -8,7 +8,6 @@ import { AnimatedSection, FloatingOm, ParallaxElement, ParallaxHero, ParallaxTex
 import { getAllChapters, getTotalVerseCount } from '@/lib/data';
 import { 
   BookOpen, 
-  Users, 
   Play, 
   Languages, 
   Heart, 
@@ -16,7 +15,6 @@ import {
   ArrowRight,
   Sparkles
 } from 'lucide-react';
-import { useNavigation } from '@/contexts/NavigationContext';
 
 export function HomeContent() {
   const allChapters = getAllChapters();

@@ -1,4 +1,4 @@
-import { getAllChapters, getTotalVerseCount } from '@/lib/data';
+import { getAllChapters } from '@/lib/data';
 
 export interface SiteRoute {
   url: string;

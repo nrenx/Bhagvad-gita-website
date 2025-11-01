@@ -1,4 +1,4 @@
-import { getAllChapters, getVerseContent, verseExists, ChapterInfo } from './data';
+import { getAllChapters, getVerseContent, verseExists } from './data';
 
 /**
  * Video integration configuration for multilingual support

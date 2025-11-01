@@ -7,6 +7,16 @@
 
 import { useEffect, useState } from 'react';
 
+type LayoutShiftEntry = PerformanceEntry & {
+  value: number;
+  hadRecentInput: boolean;
+  sources: Array<{
+    node?: Node;
+    previousRect?: DOMRectReadOnly;
+    currentRect?: DOMRectReadOnly;
+  }>;
+};
+
 // Standard device breakpoints
 export const BREAKPOINTS = {
   xs: 320,    // iPhone SE
@@ -131,11 +141,14 @@ export function detectLayoutShifts(): void {
   if (typeof window !== 'undefined' && 'PerformanceObserver' in window) {
     const observer = new PerformanceObserver((entryList) => {
       for (const entry of entryList.getEntries()) {
-        if (entry.entryType === 'layout-shift' && !(entry as any).hadRecentInput) {
-          console.warn('Layout shift detected:', {
-            value: (entry as any).value,
-            sources: (entry as any).sources,
-          });
+        if (entry.entryType === 'layout-shift') {
+          const layoutShift = entry as LayoutShiftEntry;
+          if (!layoutShift.hadRecentInput) {
+            console.warn('Layout shift detected:', {
+              value: layoutShift.value,
+              sources: layoutShift.sources,
+            });
+          }
         }
       }
     });
@@ -211,7 +224,7 @@ export function getResponsiveGridCols(breakpoint: BreakpointKey): number {
  */
 export function monitorResponsivePerformance(): void {
   if (typeof window !== 'undefined') {
-    let resizeTimeout: NodeJS.Timeout;
+    let resizeTimeout: ReturnType<typeof setTimeout>;
     
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimeout);
@@ -241,7 +254,15 @@ export function initializeResponsiveTesting(): void {
     monitorResponsivePerformance();
     
     // Add viewport testing helper to window for debugging
-    (window as any).__responsiveDebug = {
+    const debugWindow = window as Window & {
+      __responsiveDebug?: {
+        VIEWPORT_TESTS: typeof VIEWPORT_TESTS;
+        validateTouchTargets: typeof validateTouchTargets;
+        detectLayoutShifts: typeof detectLayoutShifts;
+      };
+    };
+
+    debugWindow.__responsiveDebug = {
       VIEWPORT_TESTS,
       validateTouchTargets,
       detectLayoutShifts,

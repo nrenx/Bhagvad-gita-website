@@ -6,8 +6,7 @@ import { cn } from '@/lib/utils';
 import { 
   generateBlurDataURL, 
   getYouTubeImageProps, 
-  IMAGE_QUALITY,
-  type ImageOptimizationType 
+  IMAGE_QUALITY
 } from '@/lib/image-optimization';
 
 interface OptimizedImageProps {
@@ -91,6 +90,7 @@ export function OptimizedImage({
     return (
       <Image
         {...imageProps}
+        alt={alt}
         fill
         className={cn('object-cover', className)}
       />
@@ -100,6 +100,7 @@ export function OptimizedImage({
   return (
     <Image
       {...imageProps}
+      alt={alt}
       width={width}
       height={height}
     />

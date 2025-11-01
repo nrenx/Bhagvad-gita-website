@@ -25,7 +25,8 @@ export function VerseDisplay({ chapter, verse, content, className = '' }: VerseD
       setCopiedSection(section);
       toast.success(`${section} copied to clipboard`);
       setTimeout(() => setCopiedSection(null), 2000);
-    } catch (err) {
+    } catch (error) {
+      console.error('Failed to copy text:', error);
       toast.error('Failed to copy text');
     }
   };
