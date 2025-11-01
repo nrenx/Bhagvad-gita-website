@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { PageTransition } from "@/components/ui/animations";
 import { SkipLink } from "@/components/ui/skip-link";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
@@ -88,6 +89,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.variable}>
+      <head>
+        {/* Preload critical fonts */}
+        <link
+          rel="preload"
+          href="https://fonts.gstatic.com/s/notosansdevanagari/v25/TuGKUUVrRomTS2TjqwC-JC7DWkDhVxOxYqx6QdZPnQ.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body 
         className="font-body antialiased bg-gradient-to-br from-slate-50 via-white to-slate-100 min-h-screen"
         suppressHydrationWarning={true}

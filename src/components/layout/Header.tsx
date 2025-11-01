@@ -116,7 +116,7 @@ export function Header() {
             </NavigationMenuList>
           </NavigationMenu>
 
-          {/* Mobile menu button */}
+          {/* Mobile Menu Button */}
           <Button
             variant="ghost"
             size="sm"

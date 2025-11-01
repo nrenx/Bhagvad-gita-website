@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useInView, useScroll, useTransform } from 'framer-motion';
+import { motion, useInView, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import type { HTMLMotionProps, Variants } from 'framer-motion';
 import { useRef } from 'react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
@@ -69,6 +69,7 @@ export function AnimatedSection({
 }: AnimatedSectionProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const shouldReduceMotion = useReducedMotion();
 
   const variantMap: Record<string, Variants> = {
     fadeInUp,
@@ -76,6 +77,11 @@ export function AnimatedSection({
     fadeInRight,
     stagger: staggerContainer
   };
+
+  // If user prefers reduced motion, show content immediately without animation
+  if (shouldReduceMotion) {
+    return <div ref={ref} className={className}>{children}</div>;
+  }
 
   return (
     <motion.div
